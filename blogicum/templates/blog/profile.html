@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Страница пользователя {{ profile.username }}
+{% endblock %}
+
+{% block content %}
+  <div class="container py-5">
+    <div class="card mb-5">
+      <div class="card-body">
+        <h2>Страница пользователя {{ profile.username }}</h2>
+        <ul>
+          <li>Имя: {{ profile.first_name }}</li>
+          <li>Фамилия: {{ profile.last_name }}</li>
+          <li>Email: {{ profile.email }}</li>
+        </ul>
+        
+        {% if user.is_authenticated and request.user == profile %}
+          <div class="mt-3">
+            <a class="btn btn-sm btn-primary me-2" href="{% url 'blog:edit_profile' username=profile.username %}">
+              Редактировать профиль
+            </a>
+            <a class="btn btn-sm btn-outline-secondary" href="{% url 'password_change' %}">
+              Изменить пароль
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <h3 class="mb-4">Публикации пользователя</h3>
+    <div class="row">
+      {% for post in page_obj %}
+        <div class="col-md-6 mb-4">
+          {% include "includes/post_card.html" %}
+        </div>
+      {% endfor %}
+    </div>
+
+    {% include "includes/paginator.html" %}
+  </div>
+{% endblock %}
