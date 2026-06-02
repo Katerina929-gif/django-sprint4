@@ -83,7 +83,7 @@ class PostManager(models.Manager):
     """Менеджер для управления выборками публикаций."""
 
     def with_comment_count(self):
-        """Возвращает queryset постов с посчитанным количеством комментариев."""
+        """Возвращает queryset постов с посчитанным колич. комментариев."""
         return self.annotate(comment_count=Count('comments'))
 
     def get_published(self):
