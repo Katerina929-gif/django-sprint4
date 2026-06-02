@@ -1,6 +1,8 @@
 """Описания моделей для приложения blog."""
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models import Count
+from django.utils import timezone
 
 from constants import MAX_LENGTH_TITLE
 
@@ -77,6 +79,22 @@ class Location(PublishedModel):
         verbose_name_plural = 'Местоположения'
 
 
+class PostManager(models.Manager):
+    """Менеджер для управления выборками публикаций."""
+
+    def with_comment_count(self):
+        """Возвращает queryset постов с посчитанным количеством комментариев."""
+        return self.annotate(comment_count=Count('comments'))
+
+    def get_published(self):
+        """Возвращает только опубликованные посты с подсчетом комментариев."""
+        return self.with_comment_count().filter(
+            is_published=True,
+            category__is_published=True,
+            pub_date__lte=timezone.now()
+        )
+
+
 class Post(PublishedModel):
     """Модель для хранения публикаций блога."""
 
@@ -117,6 +135,7 @@ class Post(PublishedModel):
         upload_to='posts/',
         blank=True
     )
+    objects: PostManager = PostManager()
 
     class Meta:
         """Meta-параметры модели публикации."""
